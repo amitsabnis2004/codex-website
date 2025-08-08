@@ -13,7 +13,10 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const sidebarRef = useRef(null);
+  // Call usePathname unconditionally at the top level
+  const pathname = usePathname();
+
+  const sidebarRef = useRef<HTMLDivElement>(null);
 
   const toggleSidebar = () => {
     setOpen((prevOpen) => !prevOpen);
@@ -22,6 +25,7 @@ export default function Navbar() {
   const closeSidebar = () => {
     setOpen(false);
   };
+
   useEffect(() => {
     const changeColor = () => {
       if (window.scrollY > 200) setAnimate(true);
@@ -33,7 +37,12 @@ export default function Navbar() {
 
   const handleClickOutside = (event: MouseEvent) => {
     const navbarButton = document.querySelector(".navbar-button");
-    if (navbarButton && !navbarButton.contains(event.target as Node)) {
+    if (
+      navbarButton &&
+      !navbarButton.contains(event.target as Node) &&
+      sidebarRef.current &&
+      !sidebarRef.current.contains(event.target as Node)
+    ) {
       setOpen(false);
     }
   };
@@ -45,21 +54,23 @@ export default function Navbar() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
   const ignorePaths = ["/", "/aboutus", "/members", "/events"];
+
+  const isSpecialPath = ignorePaths.includes(pathname as string);
+  const backgroundClass = !isSpecialPath
+    ? "bg-custom-gradient"
+    : animate
+    ? "bg-custom-gradient"
+    : "bg-transparent";
 
   return (
     <div
-      className={`${
-        !ignorePaths.includes(usePathname() as string)
-          ? "bg-custom-gradient"
-          : animate
-          ? "bg-custom-gradient"
-          : "bg-transparent"
-      } flex flex-row justify-between font-sans top-0 w-screen h-[65px] fixed z-50  text-white`}
+      className={`${backgroundClass} flex flex-row justify-between font-sans top-0 w-screen h-[65px] fixed z-50 text-white`}
     >
       <div
-        className="items-center flex  ml-2  transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110
-                    duration-300 "
+        className="items-center flex ml-2 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110
+                   duration-300 "
       >
         <a className="hidden lg:block lg:font-bold lg:text-[24px]" href="/">
           <Image src={codex} alt="logo" width={100} height={100} />
@@ -83,7 +94,7 @@ export default function Navbar() {
         <div>
           <a
             className={`mx-3 ${
-              usePathname() === "/" ? "border-b-2 border-b-white" : ""
+              pathname === "/" ? "border-b-2 border-b-white" : ""
             } hover:border-b-2 hover:border-b-white`}
             href="/"
           >
@@ -93,7 +104,7 @@ export default function Navbar() {
         <div>
           <a
             className={`mx-3 ${
-              usePathname() === "/aboutus" ? "border-b-2 border-b-white" : ""
+              pathname === "/aboutus" ? "border-b-2 border-b-white" : ""
             } hover:border-b-2 hover:border-b-white`}
             href="/aboutus"
           >
@@ -103,7 +114,7 @@ export default function Navbar() {
         <div>
           <a
             className={`mx-3 ${
-              usePathname() === "/members" ? "border-b-2 border-b-white" : ""
+              pathname === "/members" ? "border-b-2 border-b-white" : ""
             } hover:border-b-2 hover:border-b-white`}
             href="/members"
           >
@@ -113,7 +124,7 @@ export default function Navbar() {
         <div>
           <a
             className={`mx-3 ${
-              usePathname() === "/events" ? "border-b-2 border-b-white" : ""
+              pathname === "/events" ? "border-b-2 border-b-white" : ""
             } hover:border-b-2 hover:border-b-white`}
             href="/events"
           >
@@ -123,7 +134,7 @@ export default function Navbar() {
         <div>
           <a
             className={`mx-3 ${
-              usePathname() === "/resources" ? "border-b-2 border-b-white" : ""
+              pathname === "/resources" ? "border-b-2 border-b-white" : ""
             } hover:border-b-2 hover:border-b-white`}
             href="/resources"
           >
@@ -143,7 +154,9 @@ export default function Navbar() {
                 <div className="absolute right-0 mt-2 w-40 bg-white text-black rounded shadow-lg z-50">
                   <a
                     className={`mx-3 ${
-                      usePathname() === "/user-dashboard" ? "border-b-2 border-b-white" : ""
+                      pathname === "/user-dashboard"
+                        ? "border-b-2 border-b-white"
+                        : ""
                     } hover:border-b-2 hover:border-b-white`}
                     href="/user-dashboard"
                   >
@@ -161,7 +174,7 @@ export default function Navbar() {
           ) : (
             <a
               className={`mx-3 ${
-                usePathname() === "/login" ? "border-b-2 border-b-white" : ""
+                pathname === "/login" ? "border-b-2 border-b-white" : ""
               } hover:border-b-2 hover:border-b-white`}
               href="/login"
             >
@@ -181,7 +194,7 @@ export default function Navbar() {
           <div className="py-[20px]">
             <a
               className={`${
-                usePathname() === "/"
+                pathname === "/"
                   ? "border-b-2 border-b-white"
                   : "hover:border-b-2 hover:border-b-white"
               } hover:border-b-2 hover:border-b-white`}
@@ -193,7 +206,7 @@ export default function Navbar() {
           <div className="py-[20px]">
             <a
               className={`${
-                usePathname() === "/aboutus"
+                pathname === "/aboutus"
                   ? "border-b-2 border-b-white"
                   : "hover:border-b-2 hover:border-b-white"
               } hover:border-b-2 hover:border-b-white`}
@@ -205,7 +218,7 @@ export default function Navbar() {
           <div className="py-[20px]">
             <a
               className={`${
-                usePathname() === "/members"
+                pathname === "/members"
                   ? "border-b-2 border-b-white"
                   : "hover:border-b-2 hover:border-b-white"
               } hover:border-b-2 hover:border-b-white`}
@@ -217,7 +230,7 @@ export default function Navbar() {
           <div className="py-[20px]">
             <a
               className={`${
-                usePathname() === "/events"
+                pathname === "/events"
                   ? "border-b-2 border-b-white"
                   : "hover:border-b-2 hover:border-b-white"
               } hover:border-b-2 hover:border-b-white`}
@@ -229,7 +242,7 @@ export default function Navbar() {
           <div className="py-[20px]">
             <a
               className={`${
-                usePathname() === "/resources"
+                pathname === "/resources"
                   ? "border-b-2 border-b-white"
                   : "hover:border-b-2 hover:border-b-white"
               } hover:border-b-2 hover:border-b-white`}
@@ -249,6 +262,13 @@ export default function Navbar() {
                 </button>
                 {dropdownOpen && (
                   <div className="mt-2 bg-white text-black rounded shadow-lg">
+                    <a
+                      href="/user-dashboard"
+                      className="block w-full text-left px-4 py-2 hover:bg-gray-200"
+                      onClick={() => setOpen(false)}
+                    >
+                      Your Profile
+                    </a>
                     <button
                       onClick={() => {
                         signOut({ callbackUrl: "/" });
@@ -264,7 +284,7 @@ export default function Navbar() {
             ) : (
               <a
                 className={`block py-2 ${
-                  usePathname() === "/login"
+                  pathname === "/login"
                     ? "border-b-2 border-b-white"
                     : "hover:border-b-2 hover:border-b-white"
                 }`}

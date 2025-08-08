@@ -22,8 +22,9 @@ export default function RegisteredEvents() {
       try {
         const res = await fetch("/api/event-registration");
         const data = await res.json();
+        const now = new Date();
         const events = (data.events || [])
-          .filter((event: any) => event.visibility === true)
+          .filter((event: any) => event.visibility === true && new Date(event.event_date) >= now)
           .map((event: any) => ({
             event_id: event.event_id,
             event_name: event.event_name,
@@ -74,8 +75,8 @@ export default function RegisteredEvents() {
               </svg>
             </div>
             <h3 className="text-gray-900 text-lg font-semibold mb-2">No Events Registered</h3>
-            <p className="text-gray-600 text-sm">You haven't registered for any events yet.</p>
-            <p className="text-gray-500 text-sm mt-1">Once you register for events, they'll appear here.</p>
+            <p className="text-gray-600 text-sm">You haven&apos;t registered for any events yet.</p>
+            <p className="text-gray-500 text-sm mt-1">Once you register for events, they&apos;ll appear here.</p>
           </div>
         </div>
       </div>
